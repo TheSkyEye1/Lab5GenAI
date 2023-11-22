@@ -34,11 +34,17 @@ namespace Lab5
         DispatcherTimer timer = new DispatcherTimer();
         Random rng = new Random();
         double optimalLength = 0;
-
+        List<Point> obstacle = new List<Point>();
 
         public MainWindow()
         {
             InitializeComponent();
+
+            obstacle.Add(new Point(200, 50));
+            obstacle.Add(new Point(400, 50));
+            obstacle.Add(new Point(400, 250));
+            obstacle.Add(new Point(200, 250));
+
             timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             timer.Tick += Timer_Tick;
         }
@@ -65,15 +71,24 @@ namespace Lab5
             else
                 line.Stroke = Brushes.LightGray;
 
-            line.X1= p1.X +r / 2;
-            line.Y1 = p1.Y +r / 2;
-            line.X2 = p2.X +r / 2;
-            line.Y2 = p2.Y +r / 2;
+            line.X1 = p1.X + r / 2;
+            line.Y1 = p1.Y + r / 2;
+            line.X2 = p2.X + r / 2;
+            line.Y2 = p2.Y + r / 2;
 
             line.HorizontalAlignment = HorizontalAlignment.Left;
             line.VerticalAlignment = VerticalAlignment.Center;
             line.StrokeThickness = 1;
             scene.Children.Add(line);
+        }
+
+        public void drawOblstacle()
+        {
+            for (int i = 0; i < obstacle.Count - 1; i++)
+            {
+                drawLine(obstacle[i], obstacle[i + 1], radius, true);
+            }
+            drawLine(obstacle[0], obstacle[obstacle.Count - 1], radius, true);
         }
 
         public void drawStartNFinish()
@@ -84,15 +99,15 @@ namespace Lab5
 
         public void drawPath(List<Point> path, bool thic)
         {
-            
-            drawLine(start, path[0],radius, thic);
 
-            for(int i = 0; i< path.Count-1; i++)
+            drawLine(start, path[0], radius, thic);
+
+            for (int i = 0; i < path.Count - 1; i++)
             {
-                drawLine(path[i], path[i+1], radius, thic);
+                drawLine(path[i], path[i + 1], radius, thic);
             }
 
-            drawLine(path[path.Count-1], finish, radius, thic);
+            drawLine(path[path.Count - 1], finish, radius, thic);
         }
 
         public void Timer_Tick(object sender, EventArgs e)
@@ -109,16 +124,19 @@ namespace Lab5
         public void drawSet()
         {
             scene.Children.Clear();
+
             drawStartNFinish();
-            
-            for(int i = 1; i< gen.getPopulation().Count; i++)
+            drawOblstacle();
+
+            for (int i = 1; i < gen.getPopulation().Count; i++)
             {
                 drawPath(gen.getPopulation()[i], false);
             }
             drawPath(gen.getPopulation()[0], true);
         }
 
-        public List<Point> randomPath(double maxX,double maxY, int len)
+
+        public List<Point> randomPath(double maxX, double maxY, int len)
         {
             List<Point> path = new List<Point>();
             for (int i = 0; i < len; i++)
@@ -135,8 +153,13 @@ namespace Lab5
             for (int i = 0; i < populationSize; i++)
                 set.Add(randomPath(scene.Width - radius, scene.Height - radius, waypoints));
 
+            drawPath(obstacle, true);
+            gen.setObstacles(obstacle);
             gen.setPopulation(set, start, finish);
-            
+
+
+
+
             timer.Start();
         }
 

@@ -10,19 +10,22 @@ namespace Lab5
     public class GA
     {
         List<Genome> population = new List<Genome>();
+
+        List<Point> obstacle;
+
         int populationLimit;
         double mutationcChance = 0.7;
         Point start;
         Point finish;
-        Random rng= new Random();
+        Random rng = new Random();
 
         void sortByFitness()
         {
-            foreach(Genome g in population)
-                if(g.fitness == 0)
-                    g.calculateFitness(start, finish);
+            foreach (Genome g in population)
+                if (g.fitness == 0)
+                    g.calculateFitness(start, finish, obstacle);
 
-            population.Sort((a,b) =>(a.fitness.CompareTo(b.fitness)));
+            population.Sort((a, b) => (a.fitness.CompareTo(b.fitness)));
 
         }
 
@@ -41,16 +44,16 @@ namespace Lab5
 
             populationLimit = set.Count;
 
-            sortByFitness();    
+            sortByFitness();
         }
 
         public List<Genome> parentSElection()
         {
             List<Genome> parents = new List<Genome>();
 
-            for(int i = 0; i < population.Count/10+2;i++)
+            for (int i = 0; i < population.Count / 10 + 2; i++)
             {
-                int ind =rng.Next(population.Count);
+                int ind = rng.Next(population.Count);
 
                 if (parents.Contains(population[ind]))
                     i--;
@@ -68,10 +71,10 @@ namespace Lab5
             List<Point> points1 = new List<Point>();
             List<Point> points2 = new List<Point>();
 
-            int point = rng.Next(2, parents[0].genes.Count-2);
-            
-            for(int i = 0; i < parents[0].genes.Count;i++)
-                if(i<point)
+            int point = rng.Next(2, parents[0].genes.Count - 2);
+
+            for (int i = 0; i < parents[0].genes.Count; i++)
+                if (i < point)
                 {
                     points1.Add(parents[0].genes[i]);
                     points2.Add(parents[1].genes[i]);
@@ -105,12 +108,20 @@ namespace Lab5
         {
             List<List<Point>> set = new List<List<Point>>();
 
-            foreach(Genome g in population)
+            foreach (Genome g in population)
             {
                 set.Add(g.genes);
             }
 
             return set;
         }
+
+        public void setObstacles(List<Point> obstacle)
+        {
+            this.obstacle = obstacle;
+        }
+
+
+
     }
 }
